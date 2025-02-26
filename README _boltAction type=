@@ -1,0 +1,147 @@
+# Power Monitoring System
+
+## Overview
+This system monitors power consumption across multiple rooms using a PZEM-004T sensor and ESP32 microcontroller. It features automatic power cutoff when thresholds are exceeded and bypass detection.
+
+## Features
+- Real-time power monitoring
+- Multiple room support with individual thresholds
+- Automatic power cutoff on threshold breach
+- Bypass detection
+- Event logging and export
+- Dynamic room management
+- Web-based dashboard
+
+## Hardware Requirements
+- ESP32 development board
+- PZEM-004T v3.0 power monitor
+- Relays for power control (2 per room):
+  - One for PZEM reading selection
+  - One for power cutoff
+- Power supply (5V for ESP32 and relays)
+- Jumper wires
+- Terminal blocks/connectors
+
+## Wiring Instructions
+
+### PZEM-004T Connection
+1. Connect PZEM-004T to ESP32:
+   - PZEM TX → ESP32 GPIO16 (RX2)
+   - PZEM RX → ESP32 GPIO17 (TX2)
+   - PZEM VCC → 5V
+   - PZEM GND → GND
+
+### Relay Connections
+For each room:
+1. PZEM Reading Relay:
+   - VCC → 5V
+   - GND → GND
+   - IN → GPIO pin (specified during room setup)
+   - NO → PZEM power line connection
+   - COM → Room power input
+
+2. Cutoff Relay:
+   - VCC → 5V
+   - GND → GND
+   - IN → GPIO pin (specified during room setup)
+   - NO → Room power output
+   - COM → Power input
+
+## Software Setup
+
+### ESP32 Setup
+1. Install required libraries in Arduino IDE:
+   - PZEM004Tv30
+   - ArduinoJson
+   - ESPmDNS
+
+2. Update WiFi credentials in `power_monitor.ino`:
+   ```cpp
+   const char* ssid = "Your_SSID";
+   const char* password = "Your_Password";
+   ```
+
+3. Upload code to ESP32
+
+### Dashboard Setup
+1. Clone repository
+2. Create `.env` file from `.env.example`:
+   ```bash
+   cp .env.example .env
+   ```
+
+3. Update ESP32 IP in `.env`:
+   ```
+   VITE_ESP32_IP=esp32.local
+   ```
+   Note: Use actual IP if mDNS doesn't work
+
+4. Install dependencies and start:
+   ```bash
+   npm install
+   npm run dev
+   ```
+
+## Usage
+
+### Adding a Room
+1. Click "Add Room" button
+2. Enter:
+   - Room name
+   - PZEM reading relay GPIO pin
+   - Power cutoff relay GPIO pin
+   - Power threshold
+
+### Managing Rooms
+- Monitor power consumption in real-time
+- Update thresholds as needed
+- Reset power after cutoff using reset button
+- Export event logs using "Export Events" button
+
+### Safety Features
+- Automatic power cutoff on threshold breach
+- Bypass detection with alerts
+- Event logging for auditing
+
+## Troubleshooting
+
+### ESP32 Connection Issues
+1. Check WiFi credentials
+2. Verify ESP32 IP address
+3. Ensure ESP32 is powered and running
+4. Check serial monitor for errors
+
+### Power Reading Issues
+1. Verify PZEM-004T connections
+2. Check relay connections
+3. Ensure proper power flow
+4. Verify GPIO pin assignments
+
+### Relay Control Issues
+1. Check relay power supply
+2. Verify GPIO connections
+3. Test relay operation manually
+4. Check for proper grounding
+
+## Safety Warnings
+⚠️ IMPORTANT:
+- Work with mains power is dangerous
+- Installation should be done by qualified electrician
+- Follow local electrical codes
+- Use appropriate enclosures and isolation
+- Test safety features thoroughly before deployment
+- Regular maintenance and inspection required
+
+## Maintenance
+- Regular inspection of connections
+- Verification of safety features
+- Backup of event logs
+- Cleaning of components
+- Calibration check of PZEM-004T
+
+## Technical Notes
+- Maximum 8 rooms supported
+- Readings update every 3 seconds per room
+- Threshold range: 100W - 10000W
+- Event logs stored in browser
+- Uses WebSocket for real-time updates
